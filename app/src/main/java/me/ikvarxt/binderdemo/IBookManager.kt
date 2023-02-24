@@ -57,8 +57,8 @@ interface IBookManager : IInterface {
                 TRANS_getBookList -> {
                     data.enforceInterface(descriptor)
                     val result = this.getBookList()
-                    reply?.writeTypedList(result)
                     reply?.writeNoException()
+                    reply?.writeTypedList(result)
                     return true
                 }
 
