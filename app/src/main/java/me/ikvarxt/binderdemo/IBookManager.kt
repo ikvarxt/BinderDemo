@@ -4,6 +4,7 @@ import android.os.Binder
 import android.os.IBinder
 import android.os.IInterface
 import android.os.Parcel
+import android.os.Parcelable
 
 
 /**
@@ -14,6 +15,8 @@ interface IBookManager : IInterface {
     fun addBook(book: Book)
 
     fun getBookList(): List<Book>?
+
+    fun getBookAt(index: Int): Book?
 
     /**
      * used to create real logic in remote service
@@ -28,6 +31,7 @@ interface IBookManager : IInterface {
              */
             const val TRANS_addBook = FIRST_CALL_TRANSACTION + 1
             const val TRANS_getBookList = FIRST_CALL_TRANSACTION + 2
+            const val TRANS_getBookAt = FIRST_CALL_TRANSACTION + 3
 
             /**
              * client used this function to get a IBookManager interface,
@@ -83,6 +87,24 @@ interface IBookManager : IInterface {
                     return true
                 }
 
+                TRANS_getBookAt -> {
+                    if (reply != null) {
+                        data.enforceInterface(descriptor)
+                        val index = data.readInt()
+                        val result = this.getBookAt(index)
+                        reply.writeNoException()
+                        if (result != null) {
+                            reply.writeInt(1)
+                            result.writeToParcel(reply, Parcelable.PARCELABLE_WRITE_RETURN_VALUE)
+                        } else {
+                            reply.writeInt(0)
+                        }
+                        return true
+                    } else {
+                        return false
+                    }
+                }
+
                 else -> return super.onTransact(code, data, reply, flags)
             }
         }
@@ -126,6 +148,29 @@ interface IBookManager : IInterface {
                     reply.recycle()
                 }
                 return result
+            }
+
+            override fun getBookAt(index: Int): Book? {
+                val data = Parcel.obtain()
+                val reply = Parcel.obtain()
+                val resultBook: Book?
+
+                try {
+                    data.writeInterfaceToken(DESC)
+                    data.writeInt(index)
+                    mRemote.transact(TRANS_getBookAt, data, reply, 0)
+                    reply.readException()
+                    resultBook = if (reply.readInt() != 0) {
+                        val result = Book.createFromParcel(reply)
+                        result
+                    } else {
+                        null
+                    }
+                } finally {
+                    data.recycle()
+                    reply.recycle()
+                }
+                return resultBook
             }
 
             /**

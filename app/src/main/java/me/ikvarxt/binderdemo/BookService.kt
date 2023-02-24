@@ -20,6 +20,12 @@ class BookService : Service() {
         override fun getBookList(): List<Book> {
             return list.toList()
         }
+
+        override fun getBookAt(index: Int): Book? {
+            return if (index in 0..list.lastIndex) {
+                list[index]
+            } else null
+        }
     }
 
     override fun onBind(intent: Intent): IBinder = binder

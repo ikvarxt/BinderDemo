@@ -45,12 +45,24 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonFirst.setOnClickListener {
-            if (::bookService.isInitialized) {
-                val random = Random(42).nextInt()
-                val book = Book(random, "#$random-book")
-                bookService.addBook(book)
-                binding.textviewFirst.text = bookService.getBookList()?.joinToString("\n")
+        binding.apply {
+            buttonFirst.setOnClickListener {
+                if (::bookService.isInitialized) {
+                    val random = Random.nextInt()
+                    val book = Book(random, "#$random-book")
+                    bookService.addBook(book)
+                    textviewFirst.text = bookService.getBookList()?.joinToString("\n")
+                }
+            }
+            buttonGetIndex.setOnClickListener {
+                val list = bookService.getBookList() ?: emptyList()
+                if (list.size >= 2) {
+                    val random = Random.nextInt(list.lastIndex)
+                    textviewFirst.text = bookService.getBookAt(random).toString()
+                } else {
+                    val text = "empty list"
+                    textviewFirst.text = text
+                }
             }
         }
     }
