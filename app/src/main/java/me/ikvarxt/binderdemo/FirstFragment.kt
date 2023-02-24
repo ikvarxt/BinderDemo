@@ -50,6 +50,7 @@ class FirstFragment : Fragment() {
                 val random = Random(42).nextInt()
                 val book = Book(random, "#$random-book")
                 bookService.addBook(book)
+                binding.textviewFirst.text = bookService.getBookList()?.joinToString("\n")
             }
         }
     }

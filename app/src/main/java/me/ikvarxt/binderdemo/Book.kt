@@ -25,6 +25,11 @@ data class Book(
         return 0
     }
 
+    override fun toString(): String {
+        return "Book(id=$id, name='$name')"
+    }
+
+
     companion object CREATOR : Parcelable.Creator<Book> {
         override fun createFromParcel(parcel: Parcel): Book {
             return Book(parcel)
